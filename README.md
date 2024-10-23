@@ -1,6 +1,6 @@
 # DockerForAstroqueryMultiCat
-We have a fully working DockerForAstroquery which is APASS only and used only by skycam cloudplot.
-This is a preliminary investigation into a generic service that can query multiple catalogues and will be used by the wcs_fit script. It is currently not in use anywhere.
+Repository DockerForAstroquery is APASS only and used only by skycam cloudplot.
+This is a preliminary investigation into a generic service that can query multiple catalogues and will be used by the wcs_fit script.
 
 The Dockerfile is incredibly simplistic since this is a really minimal python script.  The Dockerfile calls the default 'python3' image and installs the couple of python packages listed the in requiremnets.txt. I do not need to mount any disks or construct any bespoke runtime environment for the simple script work. The sprat pipeline Docker (https://github.com/LivTel/sprat_l2_pipeline/tree/dockerised_binning) demonstrates many more features than this.
 
@@ -60,10 +60,11 @@ In normal ops it is notleft running continuously. It only takes a faction of a s
 so it is launched on demand to run a search and then closes down.
 
 Following is an example extracted from wcs_fit. This searches USNOB with effectively no magnitude cut, 1 < R2mag < 100. This should run from anywhere in the ARI LAN.
-``
-  set dockerURL = "tcp://150.204.240.151:2375"
-  set dockerImageName = astroquery
-  /usr/bin/docker -H ${dockerURL} run --rm -i $dockerImageName python get_ra_dec_from_vizier.py usnob $RA $DEC $SEARCH_RADIUS r 1..100 >> $RESULT_FILE 
-``
+
+``set dockerURL = "tcp://150.204.240.151:2375"``
+
+``set dockerImageName = astroquery``
+
+``/usr/bin/docker -H ${dockerURL} run --rm -i $dockerImageName python get_ra_dec_from_vizier.py usnob $RA $DEC $SEARCH_RADIUS r 1..100 >> $RESULT_FILE ``
 
 
