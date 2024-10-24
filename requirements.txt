@@ -1,6 +1,7 @@
 argparse
 #numpy
-astroquery
+astroquery 
+#astroquery == 0.4.6
 #timeit
 
 #numpy == 1.18.4
