@@ -29,7 +29,7 @@ And put the following in the service file
 
 # Runtime syntax
 
-The syntax, list and order of searchable parameters is defined by what it was on RMB's APASS REST webservice. I have not defined anything new, just used his specification for compatibility. It is not super user friendly or intuitive because it was designed as a REST API, not a human interface. The input parameters are an ordered list, all are mandatory and the order important. It is probably not a tool you want to use frequently intereactively.
+The syntax, list and order of searchable parameters is defined by what it was on RMB's APASS REST webservice. I have not defined anything new, just used his specification for compatibility. It is not super user friendly or intuitive because it was designed as a REST API, not a human interface. The input parameters are an ordered list, all are mandatory and the order important. It is probably not a tool you want to use frequently interactively. You would be better off just using astroquery itself directly.
 
 ``python get_ra_dec_from_vizier.py  CATALOG RA DEC RADIUS FILTER MAGNITUDE_RANGE``
 
