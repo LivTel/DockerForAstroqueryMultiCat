@@ -5,7 +5,7 @@ The Dockerfile is incredibly simplistic since this is a really minimal python sc
 
 # Instructions
 
-``git clone -b master https://github.com/LivTel/DockerForAstroqueryMultiCat.git``
+``git clone https://github.com/LivTel/DockerForAstroqueryMultiCat.git``
 
 ``cd DockerForAstroqueryMultiCat``
 
