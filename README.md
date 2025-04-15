@@ -17,7 +17,9 @@ lt-qc:/usr/local/bin/wcs_fit script contains
 
 # Network Ports
 
-In order to start dockerd on the host with a tcp port open so it can be addressed from a remote host
+## Unsecured
+
+In order to start dockerd on the host with an **unsecured tcp port open** so it can be addressed from any remote host without authentication
 
 ``sudo systemctl edit docker``
  
@@ -26,6 +28,55 @@ And put the following in the service file
 > [Service]<br>
 > ExecStart=<br>
 > ExecStart=/usr/bin/dockerd -H fd:// -H tcp://0.0.0.0:2375
+
+``sudo systemctl restart docker``
+
+## Secured
+
+In order to start dockerd on the host with a **TLS secured tcp port open** so it can be addressed from any remote host using TLS certificates
+is obviously _far_ more complicated.
+
+On the vmhost, we will create the TLS certificates in ~eng/docker_ssl. You will need to provide a _secret_ which will need to be stored in
+our secrets and passwords records, though obvously not mentioned here.
+
+In this example I am running on ltvmhost5, 150.204.240.157, but if oyu run on a different vmhost you will need to set the name and IP.
+
+<pre><code>
+cd /home/eng
+sudo su
+mkdir docker_ssl
+cd docker_ssl
+openssl genrsa -aes256 -out ca-key.pem 4096
+openssl req -new -x509 -days 36500 -key ca-key.pem -sha256 -out ca.pem
+openssl genrsa -out server-key.pem 4096
+openssl req -subj "/CN=ltvmhost5" -sha256 -new -key server-key.pem -out server.csr
+echo subjectAltName = DNS:ltvmhost5,IP:150.204.240.157 >> extfile.cnf
+echo extendedKeyUsage = serverAuth >> extfile.cnf
+openssl x509 -req -days 36500 -sha256 -in server.csr -CA ca.pem -CAkey ca-key.pem -CAcreateserial -out server-cert.pem -extfile extfile.cnf
+</code></pre>
+
+Next create the certificates for the client
+
+<pre><code>
+openssl genrsa -out key.pem 4096
+openssl req -subj '/CN=client' -new -key key.pem -out client.csr
+echo extendedKeyUsage = clientAuth > extfile-client.cnf
+openssl x509 -req -days 36500 -sha256 -in client.csr -CA ca.pem -CAkey ca-key.pem -CAcreateserial -out cert.pem -extfile extfile-client.cnf
+chmod 666 ca.pem cert.pem key.pem
+</code></pre>
+
+Copy ca.pem cert.pem key.pem to the client that is going to want to access this dockerd
+
+``sudo systemctl edit docker``
+
+And put the following in the service file
+
+> [Service]
+> ExecStart=
+> ExecStart=/usr/bin/dockerd --tlsverify --tlscacert=/home/eng/docker_ssl/ca.pem --tlscert=/home/eng/docker_ssl/server-cert.pem --tlskey=/home/eng/docker_ssl/server-key.pem -H fd:// -H=tcp://0.0.0.0:2376
+
+``sudo systemctl restart docker``
+
 
 # Runtime syntax
 
@@ -60,10 +111,15 @@ so it is launched on demand to run a search and then closes down.
 
 Following is an example extracted from wcs_fit. This searches USNOB with effectively no magnitude cut, 1 < R2mag < 100. This should run from anywhere in the ARI LAN.
 
-``set dockerURL = "tcp://150.204.240.151:2375"``
+
+And then one of the following, depending whather you are using TLS security or not.
 
 ``set dockerImageName = astroquery``
-
+``set dockerURL = "tcp://150.204.240.151:2375"``
 ``/usr/bin/docker -H ${dockerURL} run --rm -i $dockerImageName python get_ra_dec_from_vizier.py usnob $RA $DEC $SEARCH_RADIUS r 1..100 >> $RESULT_FILE ``
+
+``set dockerImageName = astroquery``
+``set dockerURL = "tcp://150.204.240.157:2376"``
+``/usr/bin/docker --tlsverify --tlscacert=ca.pem --tlscert=cert.pem --tlskey=key.pem -H ${dockerURL} run --rm -i $dockerImageName python get_ra_dec_from_vizier.py usnob $RA $DEC $SEARCH_RADIUS r 1..100 >> $RESULT_FILE ``
 
 
