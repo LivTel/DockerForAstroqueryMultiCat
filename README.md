@@ -25,9 +25,11 @@ In order to start dockerd on the host with an **unsecured tcp port open** so it 
  
 And put the following in the service file
 
-> [Service]<br>
-> ExecStart=<br>
-> ExecStart=/usr/bin/dockerd -H fd:// -H tcp://0.0.0.0:2375
+<pre><code>
+[Service]<br>
+ExecStart=<br>
+ExecStart=/usr/bin/dockerd -H fd:// -H tcp://0.0.0.0:2375
+</code></pre>
 
 ``sudo systemctl restart docker``
 
@@ -71,9 +73,11 @@ Copy ca.pem cert.pem key.pem to the client that is going to want to access this 
 
 And put the following in the service file
 
+<pre><code>
 > [Service]
 > ExecStart=
 > ExecStart=/usr/bin/dockerd --tlsverify --tlscacert=/home/eng/docker_ssl/ca.pem --tlscert=/home/eng/docker_ssl/server-cert.pem --tlskey=/home/eng/docker_ssl/server-key.pem -H fd:// -H=tcp://0.0.0.0:2376
+</code></pre>
 
 ``sudo systemctl restart docker``
 
@@ -114,12 +118,15 @@ Following is an example extracted from wcs_fit. This searches USNOB with effecti
 
 And then one of the following, depending whather you are using TLS security or not.
 
+<pre><code>
 ``set dockerImageName = astroquery``
 ``set dockerURL = "tcp://150.204.240.151:2375"``
 ``/usr/bin/docker -H ${dockerURL} run --rm -i $dockerImageName python get_ra_dec_from_vizier.py usnob $RA $DEC $SEARCH_RADIUS r 1..100 >> $RESULT_FILE ``
+</code></pre>
 
+<pre><code>
 ``set dockerImageName = astroquery``
 ``set dockerURL = "tcp://150.204.240.157:2376"``
 ``/usr/bin/docker --tlsverify --tlscacert=ca.pem --tlscert=cert.pem --tlskey=key.pem -H ${dockerURL} run --rm -i $dockerImageName python get_ra_dec_from_vizier.py usnob $RA $DEC $SEARCH_RADIUS r 1..100 >> $RESULT_FILE ``
-
+</code></pre>
 
