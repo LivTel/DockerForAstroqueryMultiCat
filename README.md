@@ -101,7 +101,6 @@ Optional "-v" creates verbose output to STDOUT. Otherwise the only return is a t
 # Usage examples
 
 
-
 Run it 'detached' with -d to be able to see the output
 
 ``sudo docker run -d astroquery``
@@ -110,13 +109,12 @@ To start the docker in 'interactive mode' so you can log into it and run jobs ma
 
 ``sudo docker run -it astroquery``
 
-In normal ops it is notleft running continuously. It only takes a faction of a second to invokde it from the stored image
-so it is launched on demand to run a search and then closes down.
+In normal ops it is not left running continuously. It only takes a faction of a second to invoke it from the stored image so it is launched on demand to run a search and then closes down. 
 
 Following is an example extracted from wcs_fit. This searches USNOB with effectively no magnitude cut, 1 < R2mag < 100. This should run from anywhere in the ARI LAN.
 
 
-And then one of the following, depending whather you are using TLS security or not.
+And then one of the following on the remote client, depending whether you are using TLS security or not.
 
 <pre><code>
 ``set dockerImageName = astroquery``
@@ -129,4 +127,7 @@ And then one of the following, depending whather you are using TLS security or n
 ``set dockerURL = "tcp://150.204.240.157:2376"``
 ``/usr/bin/docker --tlsverify --tlscacert=ca.pem --tlscert=cert.pem --tlskey=key.pem -H ${dockerURL} run --rm -i $dockerImageName python get_ra_dec_from_vizier.py usnob $RA $DEC $SEARCH_RADIUS r 1..100 >> $RESULT_FILE ``
 </code></pre>
+
+Note the --rm command line option to make sure dockerd cleans up the containers after it has finihed with them. 
+
 
