@@ -1,7 +1,7 @@
 # DockerForAstroqueryMultiCat
 Very simple python script designe to emulate RMB's APASS web service by wrapping astropy astroquery searches on Vizier. It is used to provide astrometric catalogues to wcs_fit on lt-qc and photometric catalogues to the skycam photometricity monitor. The Docker image sits on one of th ltvmhosts, contains a python script and can be called from any other ARI LAN machine.
 
-The Dockerfile is incredibly simplistic since this is a really minimal python script.  The Dockerfile calls the default 'python3' image and installs the couple of python packages listed the in requiremnets.txt. I do not need to mount any disks or construct any bespoke runtime environment for the simple script work. The sprat pipeline Docker (https://github.com/LivTel/sprat_l2_pipeline/tree/dockerised_binning) demonstrates many more features than this.
+The Dockerfile is incredibly simplistic since this is a really minimal python script.  The Dockerfile calls the default 'python3' image and installs the couple of python packages listed the in requirements.txt. I do not need to mount any disks or construct any bespoke runtime environment for the simple script work. The sprat pipeline Docker (https://github.com/LivTel/sprat_l2_pipeline/tree/dockerised_binning) demonstrates many more features than this.
 
 # Instructions
 
