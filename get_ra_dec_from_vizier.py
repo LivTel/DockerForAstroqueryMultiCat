@@ -34,7 +34,18 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-
+# Set the address of the Vizier server
+MIRROR_ADDRESS = 'vizier.cds.unistra.fr'           # The default
+#MIRROR_ADDRESS = 'vizier.ast.cam.ac.uk'                # If you want to use a mirror site
+# Complete list I have found so far:
+# vizier.cds.unistra.fr (primary CDS node in Strasbourg, France)
+# vizier.cfa.harvard.edu (Center for Astrophysics, USA)
+# vizier.nao.ac.jp (National Astronomical Observatory of Japan)
+# vizier.hia.nrc.ca (Herzberg Institute of Astrophysics, Canada)
+# vizier.ast.cam.ac.uk (Institute of Astronomy, Cambridge, UK)
+# vizier.iucaa.ernet.in (IUCAA, India)
+# vizier.china-vo.org
+#
 # Map friendly catalogue names to the Vizier ID codes
 catalogue_dict = {
         "nomad": "I/297",        # NOMAD Catalog (Zacharias+ 2005)
@@ -127,6 +138,7 @@ cent = SkyCoord(ra=args.centra*u.degree, dec=args.centdec*u.degree, frame='fk5')
 
 print(vizierRA, vizierDEC, vizierFilterName)
 v = Vizier(catalog=vizierCatName, 
+           vizier_server=MIRROR_ADDRESS,
            columns=[vizierRA, vizierDEC, vizierFilterName], 
            column_filters={vizierFilterName:args.magRange},
            row_limit=10000)
