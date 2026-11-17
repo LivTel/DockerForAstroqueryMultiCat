@@ -35,16 +35,15 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
 # Set the address of the Vizier server
-MIRROR_ADDRESS = 'vizier.cds.unistra.fr'           # The default
-#MIRROR_ADDRESS = 'vizier.ast.cam.ac.uk'                # If you want to use a mirror site
+#MIRROR_ADDRESS = 'vizier.cds.unistra.fr'           # The default
+MIRROR_ADDRESS = 'vizier.idia.ac.za'                # If you want to use a mirror site
 # Complete list I have found so far:
 # vizier.cds.unistra.fr (primary CDS node in Strasbourg, France)
 # vizier.cfa.harvard.edu (Center for Astrophysics, USA)
 # vizier.nao.ac.jp (National Astronomical Observatory of Japan)
 # vizier.hia.nrc.ca (Herzberg Institute of Astrophysics, Canada)
-# vizier.ast.cam.ac.uk (Institute of Astronomy, Cambridge, UK)
-# vizier.iucaa.ernet.in (IUCAA, India)
 # vizier.china-vo.org
+# vizier.idia.ac.za (South Africa)
 #
 # Map friendly catalogue names to the Vizier ID codes
 catalogue_dict = {
@@ -121,22 +120,27 @@ if args.verbose:
   print("\nCATALOGUE")
   print ("Catalogue name re-mapped for Vizier to", vizierCatName)
   catlist = Vizier.find_catalogs(vizierCatName)
-  for k, v in catlist.items():
+  if catlist == None:
+      print ("Search error. Vizier returned no catalogue list")
+  else :
+    for k, v in catlist.items():
       print(k, ":", v.description)
   catalogs = Vizier.get_catalogs(Vizier.find_catalogs(vizierCatName).keys())
-  print(catalogs)
-  print(catalogs[0][1])
-  print("List of available keys in this catalogue:")
-  print(catalogs[0].keys())
-  print("\nFILTER")
-  print ("Filter name re-mapped for Vizier to", vizierFilterName)
-  print("\n")
+  if catalogs == None :
+      print ("Search error. Vizier returned no catalogue description")
+  else :
+    print(catalogs)
+    print(catalogs[0][1])
+    print("List of available keys in this catalogue:")
+    print(catalogs[0].keys())
+    print("\nFILTER")
+    print ("Filter name re-mapped for Vizier to", vizierFilterName)
+    print("\n")
   
 preQuerySetup = timer()
 
 cent = SkyCoord(ra=args.centra*u.degree, dec=args.centdec*u.degree, frame='fk5')
 
-print(vizierRA, vizierDEC, vizierFilterName)
 v = Vizier(catalog=vizierCatName, 
            vizier_server=MIRROR_ADDRESS,
            columns=[vizierRA, vizierDEC, vizierFilterName], 
@@ -150,9 +154,12 @@ v = Vizier(catalog=vizierCatName,
 preQuery = timer()
 result = v.query_region(cent, radius=args.radius*u.degree)
 
+print(vizierRA, vizierDEC, vizierFilterName)
+
 preDisplay = timer()
 
-if len(result) :
+if (result != None) and (len(result)) :
+  print("These are the results")
   result[0].pprint_all(show_name=args.verbose, show_unit=args.verbose, show_dtype=False)
 else :
   if args.verbose :
