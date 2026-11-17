@@ -51,13 +51,14 @@ cd docker_ssl
 openssl genrsa -aes256 -out ca-key.pem 4096
 openssl req -new -x509 -days 36500 -key ca-key.pem -sha256 -out ca.pem
 openssl genrsa -out server-key.pem 4096
+if [ ! -f /root/.rnd ]; then openssl rand -writerand /root/.rnd ; fi
 openssl req -subj "/CN=ltvmhost5" -sha256 -new -key server-key.pem -out server.csr
 echo subjectAltName = DNS:ltvmhost5,IP:150.204.240.157 >> extfile.cnf
 echo extendedKeyUsage = serverAuth >> extfile.cnf
 openssl x509 -req -days 36500 -sha256 -in server.csr -CA ca.pem -CAkey ca-key.pem -CAcreateserial -out server-cert.pem -extfile extfile.cnf
 </code></pre>
 
-Next create the certificates for the client
+Next create the certificates for the client. Still running on the host machine where the Docker runs...
 
 <pre><code>
 openssl genrsa -out key.pem 4096
@@ -71,7 +72,7 @@ Copy ca.pem cert.pem key.pem to the client that is going to want to access this 
 
 ``sudo systemctl edit docker``
 
-And put the following in the service file
+And put the following in the service file. You can retain, but comment out, the old non-secured dockerd command with a # if you want to.
 
 <pre><code>
 [Service]
@@ -80,6 +81,8 @@ ExecStart=/usr/bin/dockerd --tlsverify --tlscacert=/home/eng/docker_ssl/ca.pem -
 </code></pre>
 
 ``sudo systemctl restart docker``
+
+You will now need to use certificates to connect and to use port 2376. See usage examples below.
 
 
 # Runtime syntax
@@ -130,4 +133,5 @@ set dockerURL = "tcp://150.204.240.157:2376"
 
 Note the --rm command line option to make sure dockerd cleans up the containers after it has finihed with them. 
 
+Also, by convention, non-secured docker is on port 2375 and secured is on 2376.
 

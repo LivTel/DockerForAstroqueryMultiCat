@@ -36,7 +36,7 @@ if __name__ == '__main__':
 
 # Set the address of the Vizier server
 #MIRROR_ADDRESS = 'vizier.cds.unistra.fr'           # The default
-MIRROR_ADDRESS = 'vizier.idia.ac.za'                # If you want to use a mirror site
+MIRROR_ADDRESS = 'vizier.cfa.harvard.edu'                # If you want to use a mirror site
 # Complete list I have found so far:
 # vizier.cds.unistra.fr (primary CDS node in Strasbourg, France)
 # vizier.cfa.harvard.edu (Center for Astrophysics, USA)
